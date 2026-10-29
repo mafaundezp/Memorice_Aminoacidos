@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Memorice de aminoácidos: relaciona las estructuras con sus nombres y categorías."
+    />
+    <title>Memorice de aminoácidos</title>
+
+    <style>
+      :root {
+        --azul: #174a7e;
+        --azul-oscuro: #203047;
+        --azul-claro: #eaf2fb;
+        --fondo: #f2f6fc;
+        --borde: #d7e4f2;
+        --verde: #176b49;
+        --blanco: #fff;
+
+        --esencial: #f9dfe6;
+        --no-esencial: #ffe49b;
+        --condicional: #a6e5c3;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--azul-oscuro);
+        background: var(--fondo);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.5;
+      }
+
+      header {
+        padding: 24px 5vw;
+        color: white;
+        background: linear-gradient(135deg, #123b5d, #2d6a8a);
+      }
+
+      header h1 {
+        margin: 0 0 6px;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+      }
+
+      header p {
+        margin: 0;
+      }
+
+      main {
+        width: min(1200px, 94%);
+        margin: 24px auto 50px;
+      }
+
+      .panel {
+        padding: 20px;
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+        background: var(--blanco);
+        box-shadow: 0 3px 12px #2030470b;
+      }
+
+      h2 {
+        margin-top: 0;
+        color: var(--azul);
+      }
+
+      .controls,
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin: 16px 0;
+      }
+
+      select,
+      input,
+      button {
+        font: inherit;
+      }
+
+      select,
+      input {
+        padding: 9px 12px;
+        border: 1px solid #aabbd0;
+        border-radius: 8px;
+        background: white;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .action-button {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 9px;
+        color: white;
+        background: var(--azul);
+        font-weight: bold;
+      }
+
+      .action-button:hover {
+        background: #10395f;
+      }
+
+      .stats {
+        gap: 18px;
+        font-size: 0.95rem;
+      }
+
+      #board {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .card {
+        width: 100%;
+        aspect-ratio: 225 / 195;
+        padding: 0;
+        border: 0;
+        border-radius: 14px;
+        background: transparent;
+        perspective: 1000px;
+      }
+
+      .card-inner {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 14px;
+        transform-style: preserve-3d;
+        transition: transform 600ms ease;
+      }
+
+      .card.is-flipped .card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border: 2px solid var(--borde);
+        border-radius: 14px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+
+      .card-back {
+        background: white;
+      }
+
+      .page-nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 5vw;
+        background: white;
+        border-bottom: 1px solid #d7e4f2;
+        box-shadow: 0 2px 6px #00000010;
+      }
+
+      .page-nav a {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 9px;
+        color: white;
+        background: #174a7e;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .page-nav a:hover {
+        background: #10395f;
+      }
+
+      @media (max-width: 520px) {
+        .page-nav {
+          position: static;
+        }
+      }
+
+      .card-back img {
+        width: 100%;
+        height: 100%;
+        padding: 8px;
+        object-fit: contain;
+      }
+
+      .card-front {
+        padding: 8px;
+        background: white;
+        transform: rotateY(180deg);
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .card-front img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 9px;
+      }
+
+      .card-front.name-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .amino-name {
+        font-size: clamp(1rem, 2vw, 1.35rem);
+        overflow-wrap: anywhere;
+      }
+
+      .category-label {
+        display: inline-block;
+        padding: 4px 9px;
+        border-radius: 999px;
+        color: #203047;
+        font-size: 0.78rem;
+        font-weight: normal;
+      }
+
+      .essential {
+        background: var(--esencial);
+      }
+
+      .nonessential {
+        background: var(--no-esencial);
+      }
+
+      .conditional {
+        background: var(--condicional);
+      }
+
+      .card.matched .card-face {
+        border-color: #40a879;
+      }
+
+      .card:disabled {
+        cursor: default;
+      }
+
+      #message {
+        min-height: 24px;
+        color: var(--verde);
+        font-weight: bold;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .legend span {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 12px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 9px;
+        border-bottom: 1px solid var(--borde);
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      th {
+        background: var(--azul-claro);
+      }
+
+      .clear-button {
+        margin-top: 12px;
+        padding: 9px 13px;
+        border: 0;
+        border-radius: 8px;
+        color: white;
+        background: #64748b;
+        font-weight: bold;
+      }
+
+      @media (max-width: 800px) {
+        #board {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 520px) {
+        .panel {
+          padding: 15px;
+        }
+
+        #board {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 9px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card-inner {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Memorice de aminoácidos</h1>
+      <p>Relaciona cada estructura química con el nombre del aminoácido.</p>
+    </header>
+
+    <nav class="page-nav" aria-label="Navegación entre actividades">
+  <a href="teoria.html">Ir a la teoría de aminoácidos</a>
+</nav>
+
+    <main>
+      <section class="panel">
+        <h2>Encuentra las parejas</h2>
+        <p>
+          Voltea las cartas y empareja cada estructura con su nombre. Puedes
+          jugar con todos los aminoácidos o elegir una categoría.
+        </p>
+
+        <div class="legend" aria-label="Categorías por color">
+          <span class="essential">Rosado: esenciales</span>
+          <span class="nonessential">Amarillo: no esenciales</span>
+          <span class="conditional">Verde: condicionalmente esenciales</span>
+        </div>
+
+        <div class="controls">
+          <label for="category">Categoría:</label>
+          <select id="category">
+            <option value="todos">Todas</option>
+            <option value="esencial">Esenciales</option>
+            <option value="no-esencial">No esenciales</option>
+            <option value="condicional">Condicionalmente esenciales</option>
+          </select>
+
+          <label for="pairCount">Parejas:</label>
+          <select id="pairCount"></select>
+
+          <label for="player">Jugador/a:</label>
+          <input
+            id="player"
+            type="text"
+            maxlength="30"
+            placeholder="Nombre (opcional)"
+          />
+
+          <button id="startButton" class="action-button" type="button">
+            Comenzar partida
+          </button>
+        </div>
+
+        <div class="stats" aria-live="polite">
+          <span>Parejas: <b id="correct">0 / 0</b></span>
+          <span>Incorrectas: <b id="incorrect">0</b></span>
+          <span>Intentos: <b id="attempts">0</b></span>
+          <span>Tiempo: <b id="time">00:00</b></span>
+        </div>
+
+        <section id="board" aria-label="Tarjetas del memorice"></section>
+        <p id="message" aria-live="polite"></p>
+      </section>
+
+      <section class="panel" style="margin-top: 20px">
+        <h2>Resultados guardados en este equipo</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jugador/a</th>
+                <th>Categoría</th>
+                <th>Parejas</th>
+                <th>Incorrectas</th>
+                <th>Intentos</th>
+                <th>Tiempo</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="results"></tbody>
+          </table>
+        </div>
+
+        <button id="clearResults" class="clear-button" type="button">
+          Borrar historial
+        </button>
+      </section>
+    </main>
+
+    <script>
+      const BACK_IMAGE = "reverso.png";
+      const STORAGE_KEY = "memorice_aminoacidos_resultados";
+
+      // Los nombres de los archivos deben coincidir con los PNG
+      // guardados dentro de la carpeta "imagenes".
+      const aminoacids = [
+        {
+          id: "alanina",
+          name: "Alanina",
+          image: "imagenes/alanina.png",
+          category: "no-esencial",
+        },
+        {
+          id: "arginina",
+          name: "Arginina",
+          image: "imagenes/arginina.png",
+          category: "condicionalmente-esencial",
+        },
+        {
+          id: "asparagina",
+          name: "Asparagina",
+          image: "imagenes/asparagina.png",
+          category: "no-esencial",
+        },
+        {
+          id: "acido_aspartico",
+          name: "Ácido aspártico",
+          image: "imagenes/acido_aspartico.png",
+          category: "no-esencial",
+        },
+        {
+          id: "cisteina",
+          name: "Cisteína",
+          image: "imagenes/cisteina.png",
+          category: "condicionalmente-esencial",
+        },
+        {
+          id: "glutamina",
+          name: "Glutamina",
+          image: "imagenes/glutamina.png",
+          category: "condicionalmente-esencial",
+        },
+        {
+          id: "acido_glutamico",
+          name: "Ácido glutámico",
+          image: "imagenes/acido_glutamico.png",
+          category: "no-esencial",
+        },
+        {
+          id: "glicina",
+          name: "Glicina",
+          image: "imagenes/glicina.png",
+          category: "condicionalmente-esencial",
+        },
+        {
+          id: "histidina",
+          name: "Histidina",
+          image: "imagenes/histidina.png",
+          category: "esencial",
+        },
+        {
+          id: "isoleucina",
+          name: "Isoleucina",
+          image: "imagenes/isoleucina.png",
+          category: "esencial",
+        },
+        {
+          id: "leucina",
+          name: "Leucina",
+          image: "imagenes/leucina.png",
+          category: "esencial",
+        },
+        {
+          id: "lisina",
+          name: "Lisina",
+          image: "imagenes/lisina.png",
+          category: "esencial",
+        },
+        {
+          id: "metionina",
+          name: "Metionina",
+          image: "imagenes/metionina.png",
+          category: "esencial",
+        },
+        {
+          id: "fenilalanina",
+          name: "Fenilalanina",
+          image: "imagenes/fenilalanina.png",
+          category: "esencial",
+        },
+        {
+          id: "prolina",
+          name: "Prolina",
+          image: "imagenes/prolina.png",
+          category: "no-esencial",
+        },
+        {
+          id: "serina",
+          name: "Serina",
+          image: "imagenes/serina.png",
+          category: "no-esencial",
+        },
+        {
+          id: "treonina",
+          name: "Treonina",
+          image: "imagenes/treonina.png",
+          category: "esencial",
+        },
+        {
+          id: "triptofano",
+          name: "Triptófano",
+          image: "imagenes/triptofano.png",
+          category: "esencial",
+        },
+        {
+          id: "tirosina",
+          name: "Tirosina",
+          image: "imagenes/tirosina.png",
+          category: "condicionalmente-esencial",
+        },
+        {
+          id: "valina",
+          name: "Valina",
+          image: "imagenes/valina.png",
+          category: "esencial",
+        },
+      ];
+
+      const categoryNames = {
+        todos: "Todas",
+        esencial: "Esenciales",
+        "no-esencial": "No esenciales",
+        "condicionalmente-esencial": "Condicionalmente esenciales",
+      };
+
+      const board = document.querySelector("#board");
+      const categorySelect = document.querySelector("#category");
+      const pairCountSelect = document.querySelector("#pairCount");
+      const message = document.querySelector("#message");
+
+      let selectedGroups = [];
+      let firstCard = null;
+      let locked = false;
+      let attempts = 0;
+      let correct = 0;
+      let incorrect = 0;
+      let seconds = 0;
+      let timer = null;
+      let gameStarted = false;
+      let mismatchTimeout = null;
+
+      function formatTime(value) {
+        const minutes = String(Math.floor(value / 60)).padStart(2, "0");
+        const secs = String(value % 60).padStart(2, "0");
+        return `${minutes}:${secs}`;
+      }
+
+      function shuffle(items) {
+        const result = [...items];
+
+        for (let i = result.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [result[i], result[j]] = [result[j], result[i]];
+        }
+
+        return result;
+      }
+
+      function getAvailableGroups() {
+        const category = categorySelect.value;
+
+        if (category === "todos") {
+          return aminoacids;
+        }
+
+        return aminoacids.filter((item) => item.category === category);
+      }
+
+      function updatePairOptions() {
+        const total = getAvailableGroups().length;
+        pairCountSelect.replaceChildren();
+
+        const counts = [];
+
+        for (let count = 4; count < total; count += 2) {
+          counts.push(count);
+        }
+
+        if (total > 0 && !counts.includes(total)) {
+          counts.push(total);
+        }
+
+        if (counts.length === 0) {
+          counts.push(total);
+        }
+
+        counts.forEach((count) => {
+          const option = document.createElement("option");
+          option.value = count;
+          option.textContent =
+            count === total ? `Todas (${total} parejas)` : `${count} parejas`;
+          pairCountSelect.appendChild(option);
+        });
+
+        pairCountSelect.value = String(total);
+      }
+
+      function updateStats() {
+        document.querySelector("#correct").textContent =
+          `${correct} / ${selectedGroups.length}`;
+        document.querySelector("#incorrect").textContent = incorrect;
+        document.querySelector("#attempts").textContent = attempts;
+        document.querySelector("#time").textContent = formatTime(seconds);
+      }
+
+      function categoryClass(category) {
+        if (category === "esencial") return "essential";
+        if (category === "no-esencial") return "nonessential";
+        return "conditional";
+      }
+
+      function categoryText(category) {
+        return categoryNames[category] || "Categoría";
+      }
+
+      function makeCard(item, kind) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "card";
+        button.setAttribute("aria-label", "Tarjeta oculta");
+
+        const inner = document.createElement("span");
+        inner.className = "card-inner";
+
+        const back = document.createElement("span");
+        back.className = "card-face card-back";
+
+        const backImage = document.createElement("img");
+        backImage.src = BACK_IMAGE;
+        backImage.alt = "";
+        backImage.onerror = () => {
+          backImage.hidden = true;
+          back.textContent = "Memorice";
+        };
+        back.appendChild(backImage);
+
+        const front = document.createElement("span");
+        front.className = `card-face card-front ${categoryClass(item.category)}`;
+
+        if (kind === "structure") {
+          const image = document.createElement("img");
+          image.src = item.image;
+          image.alt = `Estructura de ${item.name}`;
+          image.onerror = () => {
+            image.hidden = true;
+            const fallback = document.createElement("span");
+            fallback.textContent = `No se encontró ${item.image}`;
+            fallback.style.fontSize = "0.8rem";
+            front.appendChild(fallback);
+          };
+          front.appendChild(image);
+        } else {
+          front.classList.add("name-card");
+
+          const name = document.createElement("span");
+          name.className = "amino-name";
+          name.textContent = item.name;
+
+          const label = document.createElement("span");
+          label.className = "category-label";
+          label.textContent = categoryText(item.category);
+
+          front.append(name, label);
+        }
+
+        inner.append(back, front);
+        button.appendChild(inner);
+
+        button.addEventListener("click", () => {
+          if (
+            locked ||
+            !gameStarted ||
+            button.disabled ||
+            button.classList.contains("is-flipped")
+          ) {
+            return;
+          }
+
+          if (!timer) {
+            timer = setInterval(() => {
+              seconds++;
+              updateStats();
+            }, 1000);
+          }
+
+          button.classList.add("is-flipped");
+          button.setAttribute("aria-label", item.name);
+
+          const currentCard = { button, item, kind };
+
+          if (!firstCard) {
+            firstCard = currentCard;
+            return;
+          }
+
+          attempts++;
+
+          const isMatch =
+            firstCard.item.id === currentCard.item.id &&
+            firstCard.kind !== currentCard.kind;
+
+          if (isMatch) {
+            correct++;
+            firstCard.button.classList.add("matched");
+            button.classList.add("matched");
+            firstCard.button.disabled = true;
+            button.disabled = true;
+            firstCard = null;
+            updateStats();
+
+            if (correct === selectedGroups.length) {
+              finishGame();
+            }
+
+            return;
+          }
+
+          incorrect++;
+          locked = true;
+
+          const previousCard = firstCard;
+          firstCard = null;
+          updateStats();
+
+          mismatchTimeout = setTimeout(() => {
+            previousCard.button.classList.remove("is-flipped");
+            button.classList.remove("is-flipped");
+            previousCard.button.setAttribute("aria-label", "Tarjeta oculta");
+            button.setAttribute("aria-label", "Tarjeta oculta");
+            locked = false;
+            mismatchTimeout = null;
+          }, 900);
+        });
+
+        return button;
+      }
+
+      function startGame() {
+        clearInterval(timer);
+        clearTimeout(mismatchTimeout);
+        timer = null;
+        mismatchTimeout = null;
+
+        const available = shuffle(getAvailableGroups());
+        const requestedCount = Number(pairCountSelect.value);
+
+        selectedGroups = available.slice(0, requestedCount);
+        firstCard = null;
+        locked = false;
+        attempts = 0;
+        correct = 0;
+        incorrect = 0;
+        seconds = 0;
+        gameStarted = true;
+
+        board.replaceChildren();
+        message.textContent = "";
+        updateStats();
+
+        const cards = [];
+
+        selectedGroups.forEach((item) => {
+          cards.push({ item, kind: "structure" });
+          cards.push({ item, kind: "name" });
+        });
+
+        shuffle(cards).forEach(({ item, kind }) => {
+          board.appendChild(makeCard(item, kind));
+        });
+      }
+
+      function getResults() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch {
+          return [];
+        }
+      }
+
+      function renderResults() {
+        const tbody = document.querySelector("#results");
+        tbody.replaceChildren();
+
+        getResults().forEach((result) => {
+          const row = document.createElement("tr");
+
+          [
+            result.player,
+            result.category,
+            `${result.correct} / ${result.total}`,
+            result.incorrect,
+            result.attempts,
+            result.time,
+            result.date,
+          ].forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+          });
+
+          tbody.appendChild(row);
+        });
+      }
+
+      function finishGame() {
+        clearInterval(timer);
+        timer = null;
+        gameStarted = false;
+
+        const result = {
+          player: document.querySelector("#player").value.trim() || "Jugador/a",
+          category: categoryNames[categorySelect.value],
+          correct,
+          total: selectedGroups.length,
+          incorrect,
+          attempts,
+          time: formatTime(seconds),
+          date: new Date().toLocaleString("es-CL"),
+        };
+
+        try {
+          const results = getResults();
+          results.unshift(result);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+          renderResults();
+
+          message.textContent = `¡Partida completada! Encontraste ${correct} parejas en ${formatTime(seconds)}.`;
+        } catch {
+          message.textContent =
+            "Partida completada, pero el navegador no permitió guardar el resultado.";
+        }
+      }
+
+      categorySelect.addEventListener("change", () => {
+        updatePairOptions();
+        board.replaceChildren();
+        gameStarted = false;
+        message.textContent = "";
+      });
+
+      document
+        .querySelector("#startButton")
+        .addEventListener("click", startGame);
+
+      document.querySelector("#clearResults").addEventListener("click", () => {
+        if (confirm("¿Borrar el historial guardado en este equipo?")) {
+          localStorage.removeItem(STORAGE_KEY);
+          renderResults();
+        }
+      });
+
+      updatePairOptions();
+      updateStats();
+      renderResults();
+    </script>
+  </body>
+</html>

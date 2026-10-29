@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Recurso teórico interactivo sobre aminoácidos para QIM202K, Bioquímica General para estudiantes de Kinesiología."
+    />
+    <title>Aminoácidos | QIM202K</title>
+
+    <style>
+      :root {
+        --azul: #174a7e;
+        --azul-oscuro: #203047;
+        --azul-claro: #eaf2fb;
+        --fondo: #f2f6fc;
+        --borde: #d7e4f2;
+        --blanco: #ffffff;
+        --rosado: #f9dfe6;
+        --amarillo: #ffe49b;
+        --verde: #a6e5c3;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--azul-oscuro);
+        background: var(--fondo);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.55;
+      }
+
+      header {
+        padding: 26px 5vw;
+        color: white;
+        background: linear-gradient(135deg, #123b5d, #2d6a8a);
+      }
+
+      header h1 {
+        margin: 0 0 5px;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+      }
+
+      header p {
+        margin: 0;
+      }
+
+      main {
+        width: min(1250px, 94%);
+        margin: 25px auto 50px;
+      }
+
+      .intro,
+      .menu,
+      .detail {
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+        background: var(--blanco);
+        box-shadow: 0 3px 12px #2030470b;
+      }
+
+      .page-nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 5vw;
+        background: white;
+        border-bottom: 1px solid #d7e4f2;
+        box-shadow: 0 2px 6px #00000010;
+      }
+
+      .page-nav a {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 9px;
+        color: white;
+        background: #174a7e;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .page-nav a:hover {
+        background: #10395f;
+      }
+
+      @media (max-width: 520px) {
+        .page-nav {
+          position: static;
+        }
+      }
+
+      .intro {
+        margin-bottom: 20px;
+        padding: 18px 22px;
+      }
+
+      .intro h2,
+      .menu h2,
+      .detail h2 {
+        margin-top: 0;
+        color: var(--azul);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(250px, 0.75fr) minmax(0, 1.8fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .menu,
+      .detail {
+        padding: 20px;
+      }
+
+      .filters {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #aabbd0;
+        border-radius: 8px;
+        color: var(--azul-oscuro);
+        background: white;
+        font: inherit;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 12px 0 16px;
+      }
+
+      .legend span,
+      .category-badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 999px;
+        color: #203047;
+        font-size: 0.83rem;
+      }
+
+      .essential {
+        background: var(--rosado);
+      }
+
+      .nonessential {
+        background: var(--amarillo);
+      }
+
+      .conditional {
+        background: var(--verde);
+      }
+
+      #aminoMenu {
+        display: grid;
+        gap: 7px;
+        max-height: 65vh;
+        overflow-y: auto;
+      }
+
+      .amino-option {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--borde);
+        border-left: 7px solid transparent;
+        border-radius: 8px;
+        color: var(--azul-oscuro);
+        background: #f8fbff;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .amino-option:hover,
+      .amino-option.active {
+        border-color: var(--azul);
+        background: var(--azul-claro);
+      }
+
+      .amino-option[data-category="esencial"] {
+        border-left-color: #d9829c;
+      }
+
+      .amino-option[data-category="no-esencial"] {
+        border-left-color: #d9a900;
+      }
+
+      .amino-option[data-category="condicional"] {
+        border-left-color: #3b9b69;
+      }
+
+      .detail-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .detail-header h2 {
+        margin-bottom: 0;
+      }
+
+      .structure-frame {
+        display: grid;
+        place-items: center;
+        min-height: 260px;
+        margin: 18px 0;
+        padding: 15px;
+        overflow: hidden;
+        border: 1px solid var(--borde);
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .structure-frame img {
+        display: block;
+        max-width: min(100%, 500px);
+        max-height: 320px;
+        object-fit: contain;
+      }
+
+      .image-error {
+        color: #8b1e1e;
+        text-align: center;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .info-card {
+        padding: 15px;
+        border: 1px solid var(--borde);
+        border-radius: 10px;
+        background: #f8fbff;
+      }
+
+      .info-card h3 {
+        margin: 0 0 7px;
+        color: var(--azul);
+        font-size: 1.05rem;
+      }
+
+      .info-card p {
+        margin: 0;
+      }
+
+      .food-card {
+        grid-column: 1 / -1;
+      }
+
+      .note {
+        margin-top: 18px;
+        padding: 13px 15px;
+        border-left: 4px solid var(--azul);
+        border-radius: 7px;
+        background: var(--azul-claro);
+        font-size: 0.94rem;
+      }
+
+      .empty {
+        padding: 12px;
+        color: #5b6470;
+        text-align: center;
+      }
+
+      footer {
+        padding: 20px 5vw;
+        color: #526174;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        #aminoMenu {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          max-height: none;
+        }
+
+        .structure-frame {
+          min-height: 220px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .menu,
+        .detail {
+          padding: 15px;
+        }
+
+        #aminoMenu,
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .food-card {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Explora los aminoácidos</h1>
+      <p>
+        QIM202K · Bioquímica General para estudiantes de Kinesiología · Segundo
+        semestre
+      </p>
+    </header>
+
+    <nav class="page-nav" aria-label="Navegación entre actividades">
+      <a href="index.html">Volver al memorice</a>
+    </nav>
+
+    <main>
+      <section class="intro">
+        <h2>Proteínas y aminoácidos</h2>
+        <p>
+          Los aminoácidos son componentes de las proteínas y participan en
+          múltiples procesos celulares. Selecciona uno de la lista para revisar
+          su estructura, clasificación nutricional, funciones, relevancia para
+          la kinesiología y alimentos que lo contienen.
+        </p>
+
+        <div class="legend" aria-label="Categorías nutricionales">
+          <span class="essential">Rosado: esencial</span>
+          <span class="nonessential">Amarillo: no esencial</span>
+          <span class="conditional">Verde: condicionalmente esencial</span>
+        </div>
+      </section>
+
+      <div class="layout">
+        <aside class="menu">
+          <h2>Lista de aminoácidos</h2>
+
+          <div class="filters">
+            <div>
+              <label for="search">Buscar</label>
+              <input
+                id="search"
+                type="search"
+                placeholder="Escribe un nombre…"
+              />
+            </div>
+
+            <div>
+              <label for="categoryFilter">Filtrar por categoría</label>
+              <select id="categoryFilter">
+                <option value="todos">Todos</option>
+                <option value="esencial">Esenciales</option>
+                <option value="no-esencial">No esenciales</option>
+                <option value="condicional">Condicionalmente esenciales</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="aminoMenu" aria-label="Aminoácidos disponibles"></div>
+        </aside>
+
+        <article id="detail" class="detail" aria-live="polite">
+          <p>Selecciona un aminoácido para ver su información.</p>
+        </article>
+      </div>
+    </main>
+
+    <footer>
+      Material de apoyo para QIM202K · Bioquímica General · Kinesiología
+    </footer>
+
+    <script>
+      const aminoacidos = [
+        {
+          id: "alanina",
+          nombre: "Alanina",
+          imagen: "imagenes/alanina.png",
+          categoria: "no-esencial",
+          funcion:
+            "Participa en el metabolismo de la glucosa y en el transporte de nitrógeno entre tejidos. En el ciclo glucosa-alanina, el músculo puede transferir nitrógeno al hígado junto con un esqueleto carbonado.",
+          kinesiologia:
+            "Durante el ejercicio, el metabolismo de la alanina conecta el músculo con el hígado y contribuye al manejo del nitrógeno y a la producción hepática de glucosa. Esto forma parte de la respuesta metabólica al ejercicio; no significa que consumir alanina por sí sola mejore el rendimiento.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, legumbres, frutos secos y cereales.",
+        },
+        {
+          id: "arginina",
+          nombre: "Arginina",
+          imagen: "imagenes/arginina.png",
+          categoria: "condicional",
+          funcion:
+            "Participa en el ciclo de la urea y es precursor de óxido nítrico, creatina y otros compuestos. Se considera condicionalmente esencial en etapas de crecimiento o ante algunas situaciones de estrés fisiológico.",
+          kinesiologia:
+            "El óxido nítrico participa en la regulación del tono vascular y del flujo sanguíneo. Esta función es relevante para comprender la fisiología del ejercicio, pero no permite concluir que la suplementación con arginina mejore necesariamente el rendimiento o la rehabilitación.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, legumbres, frutos secos y semillas.",
+        },
+        {
+          id: "asparagina",
+          nombre: "Asparagina",
+          imagen: "imagenes/asparagina.png",
+          categoria: "no-esencial",
+          funcion:
+            "Participa en la síntesis de proteínas y en el transporte y metabolismo del nitrógeno. El organismo puede sintetizarla a partir de aspartato.",
+          kinesiologia:
+            "Su importancia se relaciona con el metabolismo general de aminoácidos y la síntesis proteica. No se reconoce como un suplemento específico para la recuperación muscular.",
+          alimentos:
+            "Espárragos, papas, legumbres, frutos secos, carnes, huevos y lácteos.",
+        },
+        {
+          id: "acido_aspartico",
+          nombre: "Ácido aspártico (aspartato)",
+          imagen: "imagenes/acido_aspartico.png",
+          categoria: "no-esencial",
+          funcion:
+            "Interviene en reacciones de transferencia de nitrógeno, en la síntesis de nucleótidos y en rutas metabólicas conectadas con el ciclo de Krebs.",
+          kinesiologia:
+            "Su metabolismo contribuye a la integración entre el metabolismo de aminoácidos y la producción celular de energía. Es una función metabólica general, no una garantía de mayor resistencia por consumirlo.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, legumbres, espárragos y otros vegetales.",
+        },
+        {
+          id: "cisteina",
+          nombre: "Cisteína",
+          imagen: "imagenes/cisteina.png",
+          categoria: "condicional",
+          funcion:
+            "Contiene azufre y forma parte de proteínas. Es precursora de glutatión y puede sintetizarse a partir de metionina; por eso puede ser condicionalmente esencial en determinadas circunstancias.",
+          kinesiologia:
+            "El glutatión participa en la defensa antioxidante celular. Esto permite relacionar la cisteína con el equilibrio redox durante el ejercicio, sin asumir que aumentar su consumo prevenga por sí solo el daño muscular.",
+          alimentos:
+            "Huevos, carnes, pescado, lácteos, legumbres, ajo, cebolla y frutos secos.",
+        },
+        {
+          id: "fenilalanina",
+          nombre: "Fenilalanina",
+          imagen: "imagenes/fenilalanina.png",
+          categoria: "esencial",
+          funcion:
+            "Debe obtenerse de la dieta. Es precursora de tirosina, a partir de la cual se producen catecolaminas, hormonas tiroideas y melanina.",
+          kinesiologia:
+            "Su carácter esencial destaca la necesidad de consumir proteínas que aporten todos los aminoácidos esenciales. Su metabolismo también se vincula con la síntesis de tirosina y catecolaminas.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, legumbres, frutos secos y semillas.",
+        },
+        {
+          id: "glicina",
+          nombre: "Glicina",
+          imagen: "imagenes/glicina.png",
+          categoria: "condicional",
+          funcion:
+            "Es un componente abundante del colágeno y participa en la síntesis de otras moléculas, como creatina, hemo y nucleótidos. Puede ser condicionalmente esencial cuando la demanda supera la capacidad de síntesis.",
+          kinesiologia:
+            "Su presencia en el colágeno permite relacionarla con tejidos conectivos como tendones, ligamentos y cartílago. La reparación de estos tejidos depende de múltiples factores, no de un aminoácido aislado.",
+          alimentos:
+            "Carnes, pescado, gelatina y alimentos ricos en proteínas; también se encuentra en legumbres y semillas.",
+        },
+        {
+          id: "acido_glutamico",
+          nombre: "Ácido glutámico (glutamato)",
+          imagen: "imagenes/acido_glutamico.png",
+          categoria: "no-esencial",
+          funcion:
+            "Participa en el metabolismo del nitrógeno y de otros aminoácidos. El glutamato también cumple funciones de neurotransmisor en el sistema nervioso central.",
+          kinesiologia:
+            "Su papel en la neurotransmisión ayuda a comprender la comunicación nerviosa que participa en el control motor. El glutamato de los alimentos no debe confundirse directamente con la actividad del neurotransmisor en el cerebro.",
+          alimentos:
+            "Carnes, pescado, quesos, tomates, champiñones, legumbres y alimentos fermentados.",
+        },
+        {
+          id: "glutamina",
+          nombre: "Glutamina",
+          imagen: "imagenes/glutamina.png",
+          categoria: "condicional",
+          funcion:
+            "Es un aminoácido importante para el transporte de nitrógeno y puede ser utilizado como combustible por ciertas células, como enterocitos y células del sistema inmunitario. Puede ser condicionalmente esencial durante estrés metabólico grave.",
+          kinesiologia:
+            "En ejercicio muy intenso o enfermedad grave puede cambiar su disponibilidad y metabolismo. La evidencia no permite afirmar que la suplementación sea necesaria para toda persona que entrena; su uso debe evaluarse según contexto clínico y nutricional.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, legumbres, frutos secos y algunos vegetales.",
+        },
+        {
+          id: "histidina",
+          nombre: "Histidina",
+          imagen: "imagenes/histidina.png",
+          categoria: "esencial",
+          funcion:
+            "Debe obtenerse de la dieta. Es precursora de histamina y forma parte de proteínas; también puede contribuir a la capacidad amortiguadora de algunas proteínas.",
+          kinesiologia:
+            "Su presencia en proteínas musculares y su relación con la carnosina permiten vincularla con la fisiología muscular. La función depende del conjunto de la dieta y del metabolismo, no de un efecto aislado sobre el rendimiento.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, legumbres y cereales integrales.",
+        },
+        {
+          id: "isoleucina",
+          nombre: "Isoleucina",
+          imagen: "imagenes/isoleucina.png",
+          categoria: "esencial",
+          funcion:
+            "Es un aminoácido esencial de cadena ramificada (BCAA). Participa en la síntesis de proteínas y puede ser oxidado en el músculo.",
+          kinesiologia:
+            "Su metabolismo muscular es relevante para estudiar el uso de aminoácidos durante el ejercicio. La respuesta muscular depende de la ingesta total de proteína y energía; consumir isoleucina aislada no garantiza una mejor recuperación.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, legumbres y frutos secos.",
+        },
+        {
+          id: "leucina",
+          nombre: "Leucina",
+          imagen: "imagenes/leucina.png",
+          categoria: "esencial",
+          funcion:
+            "Es un aminoácido esencial de cadena ramificada. Participa en la síntesis proteica y actúa como señal metabólica relacionada con la disponibilidad de nutrientes.",
+          kinesiologia:
+            "Es relevante para estudiar la regulación de la síntesis de proteínas musculares tras la alimentación y el ejercicio. La adaptación muscular también requiere entrenamiento, energía y el aporte de todos los aminoácidos esenciales.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, legumbres y frutos secos.",
+        },
+        {
+          id: "lisina",
+          nombre: "Lisina",
+          imagen: "imagenes/lisina.png",
+          categoria: "esencial",
+          funcion:
+            "Debe obtenerse de la dieta. Participa en la síntesis de proteínas y es necesaria para modificaciones de proteínas como el colágeno; también es precursora de carnitina.",
+          kinesiologia:
+            "Su papel en proteínas estructurales permite relacionarla con la formación y mantenimiento de tejidos. La síntesis de colágeno depende además de otros nutrientes y de la regulación fisiológica.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, lentejas, porotos y otras legumbres.",
+        },
+        {
+          id: "metionina",
+          nombre: "Metionina",
+          imagen: "imagenes/metionina.png",
+          categoria: "esencial",
+          funcion:
+            "Es un aminoácido esencial que contiene azufre. Participa en la transferencia de grupos metilo y puede aportar azufre para la síntesis de cisteína.",
+          kinesiologia:
+            "Su aporte es necesario para la síntesis y el recambio de proteínas. También permite comprender la relación metabólica entre metionina, cisteína y glutatión.",
+          alimentos:
+            "Huevos, pescado, carnes, lácteos, semillas, frutos secos y legumbres.",
+        },
+        {
+          id: "prolina",
+          nombre: "Prolina",
+          imagen: "imagenes/prolina.png",
+          categoria: "no-esencial",
+          funcion:
+            "El organismo puede sintetizarla. Es abundante en el colágeno y contribuye a la estructura de proteínas y tejidos conectivos.",
+          kinesiologia:
+            "Su presencia en el colágeno es relevante para estudiar tendones, ligamentos, cartílago y reparación tisular. La recuperación depende de múltiples factores y no de la ingesta aislada de prolina.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos y gelatina; también está presente en legumbres.",
+        },
+        {
+          id: "serina",
+          nombre: "Serina",
+          imagen: "imagenes/serina.png",
+          categoria: "no-esencial",
+          funcion:
+            "Participa en la síntesis de proteínas, fosfolípidos y otros metabolitos. También interviene en rutas de transferencia de unidades de un carbono.",
+          kinesiologia:
+            "Su función se relaciona con el metabolismo celular y la composición de membranas y proteínas. No se considera un aminoácido ergogénico específico.",
+          alimentos:
+            "Huevos, carnes, pescado, lácteos, soja, legumbres, frutos secos y semillas.",
+        },
+        {
+          id: "treonina",
+          nombre: "Treonina",
+          imagen: "imagenes/treonina.png",
+          categoria: "esencial",
+          funcion:
+            "Debe obtenerse de la dieta. Forma parte de proteínas y mucinas, y participa en el mantenimiento de tejidos y superficies mucosas.",
+          kinesiologia:
+            "Como aminoácido esencial, debe estar disponible para la síntesis proteica y el recambio de tejidos. Su importancia se interpreta dentro del aporte total de proteína.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, legumbres y frutos secos.",
+        },
+        {
+          id: "triptofano",
+          nombre: "Triptófano",
+          imagen: "imagenes/triptofano.png",
+          categoria: "esencial",
+          funcion:
+            "Es esencial y precursor de serotonina, melatonina y niacina. Estos productos participan en distintas funciones del sistema nervioso y del metabolismo.",
+          kinesiologia:
+            "Su relación con serotonina y melatonina permite discutir procesos de regulación nerviosa y sueño. No significa que consumir alimentos ricos en triptófano produzca por sí solo un efecto inmediato sobre el ánimo o el sueño.",
+          alimentos:
+            "Huevos, lácteos, pavo, pescado, soja, legumbres, avena, frutos secos y semillas.",
+        },
+        {
+          id: "tirosina",
+          nombre: "Tirosina",
+          imagen: "imagenes/tirosina.png",
+          categoria: "condicional",
+          funcion:
+            "Se sintetiza a partir de fenilalanina. Es precursora de catecolaminas, hormonas tiroideas y melanina; puede ser condicionalmente esencial si la disponibilidad de fenilalanina es insuficiente.",
+          kinesiologia:
+            "Su relación con catecolaminas y hormonas tiroideas permite comprender aspectos de la respuesta fisiológica al ejercicio. No debe interpretarse como evidencia de que suplementarla mejore necesariamente el foco o el rendimiento.",
+          alimentos:
+            "Quesos, leche, huevos, carnes, pescado, soja, legumbres, frutos secos y semillas.",
+        },
+        {
+          id: "valina",
+          nombre: "Valina",
+          imagen: "imagenes/valina.png",
+          categoria: "esencial",
+          funcion:
+            "Es un aminoácido esencial de cadena ramificada. Participa en la síntesis de proteínas y puede ser metabolizada en tejidos periféricos.",
+          kinesiologia:
+            "Su metabolismo es relevante para estudiar el uso de aminoácidos durante el ejercicio y el recambio proteico. La recuperación muscular requiere una alimentación suficiente y balanceada, no solo valina.",
+          alimentos:
+            "Carnes, pescado, huevos, lácteos, soja, legumbres, frutos secos y cereales integrales.",
+        },
+      ];
+
+      const nombresCategoria = {
+        esencial: "Esencial",
+        "no-esencial": "No esencial",
+        condicional: "Condicionalmente esencial",
+      };
+
+      const clasesCategoria = {
+        esencial: "essential",
+        "no-esencial": "nonessential",
+        condicional: "conditional",
+      };
+
+      const menu = document.querySelector("#aminoMenu");
+      const detalle = document.querySelector("#detail");
+      const busqueda = document.querySelector("#search");
+      const filtro = document.querySelector("#categoryFilter");
+
+      function renderMenu() {
+        const texto = busqueda.value.trim().toLocaleLowerCase("es");
+        const categoria = filtro.value;
+
+        const visibles = aminoacidos.filter((amino) => {
+          const coincideTexto = amino.nombre
+            .toLocaleLowerCase("es")
+            .includes(texto);
+          const coincideCategoria =
+            categoria === "todos" || amino.categoria === categoria;
+
+          return coincideTexto && coincideCategoria;
+        });
+
+        menu.replaceChildren();
+
+        if (visibles.length === 0) {
+          const mensaje = document.createElement("p");
+          mensaje.className = "empty";
+          mensaje.textContent =
+            "No hay aminoácidos que coincidan con la búsqueda.";
+          menu.appendChild(mensaje);
+          return;
+        }
+
+        visibles.forEach((amino) => {
+          const boton = document.createElement("button");
+          boton.type = "button";
+          boton.className = "amino-option";
+          boton.dataset.id = amino.id;
+          boton.dataset.category = amino.categoria;
+          boton.textContent = amino.nombre;
+          boton.setAttribute("aria-pressed", "false");
+
+          boton.addEventListener("click", () => mostrarDetalle(amino));
+          menu.appendChild(boton);
+        });
+
+        const seleccionado = menu.querySelector(".amino-option");
+        if (seleccionado) {
+          const amino = aminoacidos.find(
+            (item) => item.id === seleccionado.dataset.id,
+          );
+          mostrarDetalle(amino);
+        }
+      }
+
+      function crearTarjeta(titulo, contenido, claseExtra = "") {
+        const section = document.createElement("section");
+        section.className = `info-card ${claseExtra}`.trim();
+
+        const heading = document.createElement("h3");
+        heading.textContent = titulo;
+
+        const paragraph = document.createElement("p");
+        paragraph.textContent = contenido;
+
+        section.append(heading, paragraph);
+        return section;
+      }
+
+      function mostrarDetalle(amino) {
+        if (!amino) return;
+
+        detalle.replaceChildren();
+
+        const encabezado = document.createElement("div");
+        encabezado.className = "detail-header";
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = amino.nombre;
+
+        const categoria = document.createElement("span");
+        categoria.className = `category-badge ${clasesCategoria[amino.categoria]}`;
+        categoria.textContent = nombresCategoria[amino.categoria];
+
+        encabezado.append(titulo, categoria);
+
+        const marco = document.createElement("div");
+        marco.className = "structure-frame";
+
+        const imagen = document.createElement("img");
+        imagen.src = amino.imagen;
+        imagen.alt = `Estructura química de ${amino.nombre}`;
+        imagen.onerror = () => {
+          marco.replaceChildren();
+          const error = document.createElement("p");
+          error.className = "image-error";
+          error.textContent =
+            `No se encontró la imagen "${amino.imagen}". ` +
+            "Comprueba que el PNG esté en la carpeta indicada y que el nombre coincida.";
+          marco.appendChild(error);
+        };
+        marco.appendChild(imagen);
+
+        const grid = document.createElement("div");
+        grid.className = "info-grid";
+        grid.append(
+          crearTarjeta("Función nutricional y metabólica", amino.funcion),
+          crearTarjeta("Relevancia para Kinesiología", amino.kinesiologia),
+          crearTarjeta(
+            "Alimentos que lo contienen",
+            amino.alimentos,
+            "food-card",
+          ),
+        );
+
+        const nota = document.createElement("div");
+        nota.className = "note";
+
+        if (amino.categoria === "condicional") {
+          nota.textContent =
+            "La condición de «condicionalmente esencial» depende de la etapa de vida, " +
+            "el estado fisiológico y la capacidad de síntesis del organismo.";
+        } else if (amino.id === "prolina") {
+          nota.textContent =
+            "En esta página la prolina se presenta como no esencial, porque el organismo " +
+            "puede sintetizarla. Algunas fuentes la consideran condicionalmente esencial " +
+            "en contextos fisiológicos particulares.";
+        } else {
+          nota.textContent =
+            "La clasificación nutricional no significa que un aminoácido actúe de forma " +
+            "aislada: las funciones corporales dependen del conjunto de la dieta y del estado fisiológico.";
+        }
+
+        detalle.append(encabezado, marco, grid, nota);
+
+        document.querySelectorAll(".amino-option").forEach((boton) => {
+          const activo = boton.dataset.id === amino.id;
+          boton.classList.toggle("active", activo);
+          boton.setAttribute("aria-pressed", String(activo));
+        });
+      }
+
+      busqueda.addEventListener("input", renderMenu);
+      filtro.addEventListener("change", renderMenu);
+
+      renderMenu();
+    </script>
+  </body>
+</html>
