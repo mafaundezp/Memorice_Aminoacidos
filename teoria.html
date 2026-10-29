@@ -202,7 +202,7 @@
         border-left-color: #d9a900;
       }
 
-      .amino-option[data-category="condicional"] {
+      .amino-option[data-category="condicionalmente-esencial"] {
         border-left-color: #3b9b69;
       }
 
@@ -374,7 +374,7 @@
                 <option value="todos">Todos</option>
                 <option value="esencial">Esenciales</option>
                 <option value="no-esencial">No esenciales</option>
-                <option value="condicional">Condicionalmente esenciales</option>
+                <option value="condicionalmente-esencial">Condicionalmente esenciales</option>
               </select>
             </div>
           </div>
@@ -410,9 +410,9 @@
           id: "arginina",
           nombre: "Arginina",
           imagen: "imagenes/Arginina.png",
-          categoria: "condicional",
+          categoria: "condicionalmente-esencial",
           funcion:
-            "Participa en el ciclo de la urea y es precursor de óxido nítrico, creatina y otros compuestos. Se considera condicionalmente esencial en etapas de crecimiento o ante algunas situaciones de estrés fisiológico.",
+            "Participa en el ciclo de la urea y es precursor de óxido nítrico, creatina y otros compuestos. Se considera condicionalmente-esencialmente esencial en etapas de crecimiento o ante algunas situaciones de estrés fisiológico.",
           kinesiologia:
             "El óxido nítrico participa en la regulación del tono vascular y del flujo sanguíneo. Esta función es relevante para comprender la fisiología del ejercicio, pero no permite concluir que la suplementación con arginina mejore necesariamente el rendimiento o la rehabilitación.",
           alimentos:
@@ -446,9 +446,9 @@
           id: "cisteina",
           nombre: "Cisteína",
           imagen: "imagenes/Cisteina.png",
-          categoria: "condicional",
+          categoria: "condicionalmente-esencial",
           funcion:
-            "Contiene azufre y forma parte de proteínas. Es precursora de glutatión y puede sintetizarse a partir de metionina; por eso puede ser condicionalmente esencial en determinadas circunstancias.",
+            "Contiene azufre y forma parte de proteínas. Es precursora de glutatión y puede sintetizarse a partir de metionina; por eso puede ser condicionalmente-esencialmente esencial en determinadas circunstancias.",
           kinesiologia:
             "El glutatión participa en la defensa antioxidante celular. Esto permite relacionar la cisteína con el equilibrio redox durante el ejercicio, sin asumir que aumentar su consumo prevenga por sí solo el daño muscular.",
           alimentos:
@@ -470,9 +470,9 @@
           id: "glicina",
           nombre: "Glicina",
           imagen: "imagenes/Glicina.png",
-          categoria: "condicional",
+          categoria: "no-esencial",
           funcion:
-            "Es un componente abundante del colágeno y participa en la síntesis de otras moléculas, como creatina, hemo y nucleótidos. Puede ser condicionalmente esencial cuando la demanda supera la capacidad de síntesis.",
+            "Es un componente abundante del colágeno y participa en la síntesis de otras moléculas, como creatina, hemo y nucleótidos. Puede ser condicionalmente-esencialmente esencial cuando la demanda supera la capacidad de síntesis.",
           kinesiologia:
             "Su presencia en el colágeno permite relacionarla con tejidos conectivos como tendones, ligamentos y cartílago. La reparación de estos tejidos depende de múltiples factores, no de un aminoácido aislado.",
           alimentos:
@@ -494,9 +494,9 @@
           id: "glutamina",
           nombre: "Glutamina",
           imagen: "imagenes/Glutamina.png",
-          categoria: "condicional",
+          categoria: "condicionalmente-esencial",
           funcion:
-            "Es un aminoácido importante para el transporte de nitrógeno y puede ser utilizado como combustible por ciertas células, como enterocitos y células del sistema inmunitario. Puede ser condicionalmente esencial durante estrés metabólico grave.",
+            "Es un aminoácido importante para el transporte de nitrógeno y puede ser utilizado como combustible por ciertas células, como enterocitos y células del sistema inmunitario. Puede ser condicionalmente-esencialmente esencial durante estrés metabólico grave.",
           kinesiologia:
             "En ejercicio muy intenso o enfermedad grave puede cambiar su disponibilidad y metabolismo. La evidencia no permite afirmar que la suplementación sea necesaria para toda persona que entrena; su uso debe evaluarse según contexto clínico y nutricional.",
           alimentos:
@@ -614,9 +614,9 @@
           id: "tirosina",
           nombre: "Tirosina",
           imagen: "imagenes/Tirosina.png",
-          categoria: "condicional",
+          categoria: "condicionalmente-esencial",
           funcion:
-            "Se sintetiza a partir de fenilalanina. Es precursora de catecolaminas, hormonas tiroideas y melanina; puede ser condicionalmente esencial si la disponibilidad de fenilalanina es insuficiente.",
+            "Se sintetiza a partir de fenilalanina. Es precursora de catecolaminas, hormonas tiroideas y melanina; puede ser condicionalmente-esencialmente esencial si la disponibilidad de fenilalanina es insuficiente.",
           kinesiologia:
             "Su relación con catecolaminas y hormonas tiroideas permite comprender aspectos de la respuesta fisiológica al ejercicio. No debe interpretarse como evidencia de que suplementarla mejore necesariamente el foco o el rendimiento.",
           alimentos:
@@ -639,13 +639,13 @@
       const nombresCategoria = {
         esencial: "Esencial",
         "no-esencial": "No esencial",
-        condicional: "Condicionalmente esencial",
+        "condicionalmente-esencial": "Condicionalmente esencial",
       };
 
       const clasesCategoria = {
         esencial: "essential",
         "no-esencial": "nonessential",
-        condicional: "conditional",
+        "condicionalmente-esencial": "conditional",
       };
 
       const menu = document.querySelector("#aminoMenu");
@@ -763,7 +763,7 @@
         const nota = document.createElement("div");
         nota.className = "note";
 
-        if (amino.categoria === "condicional") {
+        if (amino.categoria === "condicionalmente-esencial") {
           nota.textContent =
             "La condición de «condicionalmente esencial» depende de la etapa de vida, " +
             "el estado fisiológico y la capacidad de síntesis del organismo.";
